@@ -1,3 +1,10 @@
+Nifi-with-monitoring contains the following containers: 
+* Apache Nifi
+* Apache Nifi-Registry
+* Prometheus
+* Prometheus Pushgateway 
+* Grafana
+
 ### How to run
 ```
 docker-compose up
