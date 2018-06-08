@@ -1,3 +1,8 @@
+### How to run
+```
+docker-compose up
+```
+
 ### Urls
 
 #### Nifi
