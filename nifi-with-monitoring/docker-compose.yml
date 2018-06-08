@@ -1,0 +1,37 @@
+version: '3.1'
+services:
+  nifi:
+    image: apache/nifi:1.6.0
+    hostname: nifi
+    ports:
+      - "8080:8080"
+      # to be used by any process group to listen on
+      - "9090:9090"
+  nifi-registry:
+    build:
+      context: nifi-registry
+    hostname: nifi-registry
+    ports:
+      - "18080:18080"
+    environment:
+      - NIFI_HOST=nifi
+    depends_on:
+      - nifi
+  pushgateway:
+    image: prom/pushgateway
+    hostname: pushgateway
+    ports:
+      - "9091:9091"
+  prometheus:
+    build:
+      context: prometheus
+    hostname: prometheus
+    environment:
+      - GRAFANA_HOST=grafana
+    depends_on:
+      - grafana
+  grafana:
+    image: grafana/grafana
+    hostname: grafana
+    ports:
+      - "3000:3000"
