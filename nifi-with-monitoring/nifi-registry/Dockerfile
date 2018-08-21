@@ -1,4 +1,4 @@
-FROM apache/nifi-registry:0.1.0
+FROM apache/nifi-registry:0.2.0
 
 ARG NIFI_HOST
 ENV NIFI_HOST ${NIFI_HOST}

@@ -1,12 +1,20 @@
 version: '3.1'
 services:
   nifi:
-    image: apache/nifi:1.6.0
+    build:
+      context: nifi
     hostname: nifi
     ports:
       - "8080:8080"
       # to be used by any process group to listen on
       - "9090:9090"
+    volumes:
+      - "./nifi/data/content_repository:/opt/nifi/nifi-1.7.1/content_repository"
+      - "./nifi/data/database_repository:/opt/nifi/nifi-1.7.1/database_repository"
+      - "./nifi/data/flowfile_repository:/opt/nifi/nifi-1.7.1/flowfile_repository"
+      - "./nifi/data/provenance_repository:/opt/nifi/nifi-1.7.1/provenance_repository"
+      - "./nifi/data/conf/templates:/opt/nifi/nifi-1.7.1/conf/templates"
+      - "./nifi/data/flow:/opt/nifi/nifi-1.7.1/conf/flow"
   nifi-registry:
     build:
       context: nifi-registry
@@ -15,6 +23,9 @@ services:
       - "18080:18080"
     environment:
       - NIFI_HOST=nifi
+    volumes:
+      - "./nifi-registry/data/database:/opt/nifi-registry/nifi-registry-0.2.0/database"
+      - "./nifi-registry/data/flow_storage:/opt/nifi-registry/nifi-registry-0.2.0/flow_storage"
     depends_on:
       - nifi
   pushgateway:
@@ -22,12 +33,18 @@ services:
     hostname: pushgateway
     ports:
       - "9091:9091"
+    command: --persistence.file=/pushgateway/data/pushgateway.data --persistence.interval=1m
+    volumes:
+    - "./pushgateway/data:/pushgateway/data"
   prometheus:
     build:
       context: prometheus
     hostname: prometheus
     environment:
       - GRAFANA_HOST=grafana
+    volumes:
+      - "./prometheus/files/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "./prometheus/data:/prometheus"
     depends_on:
       - grafana
   grafana:
@@ -35,3 +52,5 @@ services:
     hostname: grafana
     ports:
       - "3000:3000"
+    volumes:
+      - "./grafana/data:/var/lib/grafana"
